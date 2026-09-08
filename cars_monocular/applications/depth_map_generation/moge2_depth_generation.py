@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,13 +22,12 @@
 this module contains the epipolar grid generation application class.
 """
 
-import logging
-
 # Standard imports
 import os
 from pathlib import Path
 
 import cars.orchestrator.orchestrator as ocht
+from cars.core.cars_logging import logger
 from cars.core.inputs import rasterio_get_size
 
 # CARS imports
@@ -141,7 +140,7 @@ class MoGe2DepthGeneration(DepthMapGeneration, short_name="moge2"):
             if os.path.exists(recognized_repos[model]):
                 return recognized_repos[model].absolute().as_posix()
 
-            logging.warning(
+            logger.warning(
                 f"The requested MoGe-2 model ({model}) was not downloaded "
                 "prior to launching CARS, using cars-download-moge2."
             )
@@ -155,7 +154,7 @@ class MoGe2DepthGeneration(DepthMapGeneration, short_name="moge2"):
             return os.path.join(local_model_path, "model.pt")
 
         except LocalEntryNotFoundError:
-            logging.warning(
+            logger.warning(
                 f"The requested MoGe-2 model ({model}) was not found locally. "
                 "CARS will try to download it from HuggingFace."
             )
@@ -165,7 +164,7 @@ class MoGe2DepthGeneration(DepthMapGeneration, short_name="moge2"):
 
             return os.path.join(local_model_path, "model.pt")
         except Exception as exception:
-            logging.error(
+            logger.error(
                 f"The requested MoGe-2 model ({model}) could not be downloaded."
             )
             raise exception
@@ -208,7 +207,7 @@ class MoGe2DepthGeneration(DepthMapGeneration, short_name="moge2"):
             min_tile_size=420,
         )
 
-        logging.warning(
+        logger.warning(
             f"Using window size {window_size} with overlap {margin}"
         )
 

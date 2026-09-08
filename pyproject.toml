@@ -13,11 +13,11 @@ requires = [
 
 [tool.setuptools]
 packages = [
-    "cars_edge_detection_plugin",
-    "cars_edge_detection_plugin.applications",
-    "cars_edge_detection_plugin.applications.depth_map_generation",
-    "cars_edge_detection_plugin.pipelines",
-    "cars_edge_detection_plugin.pipelines.edge_detection",
+    "cars_monocular",
+    "cars_monocular.applications",
+    "cars_monocular.applications.depth_map_generation",
+    "cars_monocular.pipelines",
+    "cars_monocular.pipelines.monocular",
     "moge",
     "moge.model",
     "moge.test",
@@ -46,14 +46,14 @@ packages = [
 
 # package setup main metadata
 [project]
-name = "cars_edge_detection_plugin"
+name = "cars-monocular"
 dynamic = ["version"]
 authors = [{ name = "CNES", email = "cars@cnes.fr" }]
-description = "Cars plugin to use the MoGe2 model for edge detection"
+description = "CARS plugin to use the MoGe2 model for monocular reconstruction"
 readme = "README.md"
 # license = "Apache License 2.0"
 # license-files = ["LICENSE"]
-keywords = ["cars", "3D", "DEM", "pandora", "photogrammetry", "moge2"]
+keywords = ["cars", "3D", "DEM", "pandora", "photogrammetry", "moge2", "monocular"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -110,7 +110,7 @@ dev = [
 ]
 
 cars = [
-    "cars>=1.0a0,<1.1"
+    "cars>=1.2.0"
 ]
 
 
@@ -137,11 +137,11 @@ universal = false
 
 # entry points
 [project.entry-points."cars.plugins"]
-plugin = "cars_edge_detection_plugin"
+plugin = "cars_monocular"
 
 # entry points cli scripts
 [project.scripts]
-cars-download-moge2 = "cars_edge_detection_plugin.download_models:main"
+cars-download-moge2 = "cars_monocular.download_models:main"
 
 [tool.cibuildwheel]
 skip = ["pp*", "*-win32"]

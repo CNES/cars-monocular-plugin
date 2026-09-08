@@ -1,10 +1,10 @@
-CARS Edge detection plugin Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
+CARS Monocular Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 
 This software is distributed under the Apache Software License (ASL) v2.0, see
 LICENSE file or http://www.apache.org/licenses/LICENSE-2.0 for details.
 
 ------------------
-CARS Edge detection plugin Dependencies
+CARS Monocular Dependencies
 ------------------
 
 Python: programming language that lets you work quickly and integrate systems more effectively.

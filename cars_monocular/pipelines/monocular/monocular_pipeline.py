@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,16 +25,16 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=too-many-nested-blocks
 """
-CARS Edge detection pipeline class file
+CARS Monocular pipeline class file
 """
 
 # Standard imports
 from __future__ import print_function
 
-import logging
 import os
 
 from cars.applications.application import Application
+from cars.core.cars_logging import logger
 
 # CARS imports
 from cars.core.progress.progress import ProgressTree
@@ -57,18 +57,18 @@ from json_checker import Checker, OptionalKey
 package_path = os.path.dirname(__file__)
 
 PIPELINE = "pipeline"
-EDGE_DETECTION = "edge_detection"
+MONOCULAR = "monocular"
 
 
-@Pipeline.register(EDGE_DETECTION)
-class EdgeDetection(PipelineTemplate):
+@Pipeline.register(MONOCULAR)
+class Monocular(PipelineTemplate):
     """
-    EdgeDetection pipeline
+    Monocular pipeline
     """
 
     def __init__(self, conf, config_dir=None):
         """
-        Instantiates EdgeDetection pipeline
+        Instantiates Monocular pipeline
 
         :param conf: user conf as a dict
         :param config_dir: configuration directory
@@ -92,15 +92,13 @@ class EdgeDetection(PipelineTemplate):
             conf.get(ORCHESTRATOR, None)
         )
         used_conf[INPUT] = self.check_inputs(conf, config_dir)
-        used_conf[EDGE_DETECTION] = conf.get(EDGE_DETECTION, {})
+        used_conf[MONOCULAR] = conf.get(MONOCULAR, {})
 
-        user_app = conf.get(EDGE_DETECTION, {}).get(APPLICATIONS, {})
-        user_adv = conf.get(EDGE_DETECTION, {}).get(ADVANCED, {})
+        user_app = conf.get(MONOCULAR, {}).get(APPLICATIONS, {})
+        user_adv = conf.get(MONOCULAR, {}).get(ADVANCED, {})
 
-        used_conf[EDGE_DETECTION][ADVANCED] = self.check_advanced(user_adv)
-        used_conf[EDGE_DETECTION][APPLICATIONS] = self.check_applications(
-            user_app
-        )
+        used_conf[MONOCULAR][ADVANCED] = self.check_advanced(user_adv)
+        used_conf[MONOCULAR][APPLICATIONS] = self.check_applications(user_app)
         used_conf[OUTPUT] = self.check_output(conf)
 
         return used_conf
@@ -111,7 +109,7 @@ class EdgeDetection(PipelineTemplate):
         global_schema = {
             INPUT: dict,
             OUTPUT: dict,
-            OptionalKey(EDGE_DETECTION): dict,
+            OptionalKey(MONOCULAR): dict,
             OptionalKey(PIPELINE): str,
             OptionalKey(ADVANCED): dict,
             OptionalKey(ORCHESTRATOR): dict,
@@ -120,12 +118,12 @@ class EdgeDetection(PipelineTemplate):
         checker_inputs = Checker(global_schema)
         checker_inputs.validate(conf)
 
-    def check_inputs(self, conf, config_json_dir=None):
+    def check_inputs(self, conf, config_dir=None):
         """
         Check the inputs given to the pipeline. They can only be sensor images.
         """
         return sensor_inputs.sensors_check_inputs(
-            conf.get(INPUT, {}), config_dir=config_json_dir
+            conf.get(INPUT, {}), config_dir=config_dir
         )
 
     def check_applications(self, conf):
@@ -146,7 +144,7 @@ class EdgeDetection(PipelineTemplate):
                     f"No {app_key} application used in the "
                     + "default Cars pipeline"
                 )
-                logging.error(msg)
+                logger.error(msg)
                 raise NameError(msg)
 
         depth_map_generation_conf = conf.get("depth_map_generation", {})
@@ -180,52 +178,50 @@ class EdgeDetection(PipelineTemplate):
         conf["save_intermediate_data"] = conf.get(
             "save_intermediate_data", False
         )
-        conf["right_image_edge_detection"] = conf.get(
-            "right_image_edge_detection", False
-        )
+        conf["right_image_monocular"] = conf.get("right_image_monocular", False)
 
         schema = {
             "save_intermediate_data": bool,
-            "right_image_edge_detection": bool,
+            "right_image_monocular": bool,
         }
 
         checker = Checker(schema)
         checker.validate(conf)
 
         self.save_intermediate_data = conf["save_intermediate_data"]
-        self.right_image_edge_detection = conf["right_image_edge_detection"]
+        self.right_image_monocular = conf["right_image_monocular"]
 
         return conf
 
     def setup_progress_tracking(self, parent_pipeline_id=None):
         """
-        Setup progress tracking for edge detection.
+        Setup progress tracking for monocular.
 
         :param parent_pipeline_id: Optional parent pipeline ID
         :type parent_pipeline_id: int or None
-        :return: Task ID for the edge detection task
+        :return: Task ID for the monocular task
         :rtype: int
         """
         progress_tree = ProgressTree()
         if parent_pipeline_id is None:
             self.pipeline_progress_id = progress_tree.begin_pipeline(
-                "Edge Detection"
+                "Monocular"
             )
         else:
             self.pipeline_progress_id = parent_pipeline_id
         self.task_progress_id = progress_tree.register_task(
             self.pipeline_progress_id,
-            "edge_detection",
+            "monocular",
             weight=1.0,
         )
         return self.task_progress_id
 
-    @cars_profile(name="Run_edge_detection", interval=0.5)
+    @cars_profile(name="Run_monocular", interval=0.5)
     def run(
         self, args=None, parent_pipeline_id=None
     ):  # pylint: disable=unused-argument
         """
-        Exécute le pipeline EdgeDetection
+        Exécute le pipeline Monocular
 
         :param args: parsed command-line arguments
         :param parent_pipeline_id: Optional pipeline ID for progress tracking
@@ -235,7 +231,7 @@ class EdgeDetection(PipelineTemplate):
         sensors_to_compute = [
             left for left, _ in self.used_conf[INPUT]["pairing"]
         ]
-        if self.right_image_edge_detection:
+        if self.right_image_monocular:
             sensors_to_compute += [
                 right for _, right in self.used_conf[INPUT]["pairing"]
             ]
@@ -252,7 +248,7 @@ class EdgeDetection(PipelineTemplate):
 
             for sensor_key in sensors_to_compute:
                 depth_map_generation_save_dir = os.path.join(
-                    self.out_dir, "edge_detection", sensor_key
+                    self.out_dir, "monocular", sensor_key
                 )
                 depth_map_generation_dump_dir = os.path.join(
                     self.dump_dir, "depth_map_generation", sensor_key
@@ -260,7 +256,7 @@ class EdgeDetection(PipelineTemplate):
                 safe_makedirs(depth_map_generation_save_dir)
                 safe_makedirs(depth_map_generation_dump_dir)
 
-                logging.info(
+                logger.info(
                     f"Starting Depth map generation for sensor {sensor_key}"
                 )
                 self.cars_orchestrator.set_target_task(self.task_progress_id)

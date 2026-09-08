@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,14 +19,10 @@
 # limitations under the License.
 #
 """
-Init file of the Edge detection plugin for CARS
+CARS depth_map_generation module init file
 """
 
-import cars_edge_detection_plugin.applications  # noqa: F401
-import cars_edge_detection_plugin.pipelines  # noqa: F401
-from cars_edge_detection_plugin.download_models import (
-    ensure_default_model_available,
+from . import (  # noqa: F401
+    abstract_depth_map_generation_app,
+    moge2_depth_generation,
 )
-
-# Best-effort auto-download of the default model on import.
-ensure_default_model_available()

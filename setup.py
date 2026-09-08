@@ -7,7 +7,7 @@
 #
 #     https://gitlab.cnes.fr/co3d-image/codip
 """
-Setup.py for cars edge detection plugin
+Setup.py for CARS Monocular
 """
 
 from setuptools import setup

@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 """
-This file contains the model downloading script for the Edge detection plugin
+This file contains the model downloading script for CARS Monocular
 """
 
 import argparse

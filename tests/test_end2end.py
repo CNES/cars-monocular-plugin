@@ -11,9 +11,7 @@ import tempfile
 import pytest
 from cars.core.utils import safe_makedirs
 
-from cars_edge_detection_plugin.pipelines.edge_detection import (
-    edge_detection_pipeline,
-)
+from cars_monocular.pipelines.monocular import monocular_pipeline
 
 # CARS Tests imports
 from .helpers import absolute_data_path, assert_same_images
@@ -52,12 +50,10 @@ def test_end2end_gizeh_inputs():
             "depth_map_generation": {"model": "Ruicheng/moge-2-vitb-normal"}
         }
 
-        input_conf["edge_detection"]["applications"] = conf_applications
-        input_conf["edge_detection"]["advanced"][
-            "save_intermediate_data"
-        ] = True
+        input_conf["monocular"]["applications"] = conf_applications
+        input_conf["monocular"]["advanced"]["save_intermediate_data"] = True
 
-        pipeline = edge_detection_pipeline.EdgeDetection(input_conf)
+        pipeline = monocular_pipeline.Monocular(input_conf)
         pipeline.run()
 
         out_dir = os.path.join(input_conf["output"]["directory"])
@@ -69,7 +65,7 @@ def test_end2end_gizeh_inputs():
 
         to_check = [
             (
-                os.path.join(out_dir, "edge_detection/one/edges.tif"),
+                os.path.join(out_dir, "monocular/one/edges.tif"),
                 "end2end_gizeh_crop_edges.tif",
             ),
             (

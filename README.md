@@ -1,4 +1,4 @@
-# Edge Detection plugin for CARS
+# Monocular abilities for CARS
 
 This plugin enables the use of the MoGe2 model in CARS, for higher accuracy building reconstruction.
 
@@ -16,8 +16,8 @@ More information can be found over at [CARS's GitHub page](https://github.com/CN
 First clone this repository, using :
 
 ```bash
-$ git clone --recurse-submodules git@gitlab.cnes.fr:dali/cars-park/cars-plugins/cars-edge-detection-plugin.git
-$ cd cars-edge-detection-plugin   
+$ git clone --recurse-submodules git@gitlab.cnes.fr:dali/cars-park/cars-plugins/cars-monocular.git
+$ cd cars-monocular   
 ``` 
 
 > **Note:** `--recurse-submodules` is required. This project vendors [MoGe](https://github.com/microsoft/MoGe) as a submodule, and MoGe itself vendors `utils3d` and `pipeline` as nested submodules. A plain `git clone` will leave those directories empty, causing build failures.
@@ -58,12 +58,12 @@ then move it to its proper place for the plugin to recognize it :
 $ wget https://huggingface.co/Ruicheng/moge-2-vitl-normal/resolve/main/model.pt
 
 # move the model to the right place
-# it should be under cars_edge_detection_plugin/applications/depth_map_generation/models with the proper name for each model :
+# it should be under cars_monocular/applications/depth_map_generation/models with the proper name for each model :
 #  - moge-2-vitl-normal.pt
 #  - moge-2-vitb-normal.pt
 #  - moge-2-vits-normal.pt
-$ mkdir [your/plugin/installation/path/]cars_edge_detection_plugin/applications/depth_map_generation/models
-$ mv ./model.pt [your/plugin/installation/path/]cars_edge_detection_plugin/applications/depth_map_generation/models/moge-2-vitl-normal.pt
+$ mkdir [your/plugin/installation/path/]cars_monocular/applications/depth_map_generation/models
+$ mv ./model.pt [your/plugin/installation/path/]cars_monocular/applications/depth_map_generation/models/moge-2-vitl-normal.pt
 ```
 
 ## Using the new pipeline
@@ -78,7 +78,7 @@ $ cars configfile.yaml
 
 ### Configuration
 
-The edge detection pipeline can be enabled by setting the pipeline parameter in the global advanced section of the CARS configuration.
+The monocular pipeline can be enabled by setting the pipeline parameter in the global advanced section of the CARS configuration.
 
 A minimal example configuration is shown below:
 
@@ -87,24 +87,24 @@ input:
   sensors:
     one: # sensor image path
     two: # sensor image path
-pipeline: edge_detection
+pipeline: monocular
 output:
   directory: outresults
 ```
 
-The pipeline operates on image pairs. By default, edge detection is only computed where required by downstream applications, meaning on the left images only.
+The pipeline operates on image pairs. By default, monocular is only computed where required by downstream applications, meaning on the left images only.
 
-Additional options specific to the edge detection pipeline can be configured under the edge_detection section. 
-For example, edge detection can also be applied to right images, and the MoGe2-based depth map generation application can be configured as follows:
+Additional options specific to the monocular pipeline can be configured under the monocular section. 
+For example, monocular can also be applied to right images, and the MoGe2-based depth map generation application can be configured as follows:
 
 ```yaml
 input: ...
 advanced: ...
 output: ...
-edge_detection:
+monocular:
   advanced:
     save_intermediate_data: false
-    right_image_edge_detection: true
+    right_image_monocular: true
   applications:
     depth_map_generation:
       method: moge2

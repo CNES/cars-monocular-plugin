@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@
 this module contains the abstract depth map generation application class.
 """
 
-import logging
 from abc import ABCMeta, abstractmethod
 from typing import Dict
 
 from cars.applications.application import Application
 from cars.applications.application_template import ApplicationTemplate
+from cars.core.cars_logging import logger
 
 
 @Application.register("depth_map_generation")
@@ -52,7 +52,7 @@ class DepthMapGeneration(ApplicationTemplate, metaclass=ABCMeta):
         dm_method = cls.default_application
 
         if bool(conf) is False or "method" not in conf:
-            logging.info(
+            logger.info(
                 "Depth map generation method not specified, default "
                 " {} is used".format(dm_method)
             )
@@ -60,7 +60,7 @@ class DepthMapGeneration(ApplicationTemplate, metaclass=ABCMeta):
             dm_method = conf.get("method", cls.default_application)
 
         if dm_method not in cls.available_applications:
-            logging.error(
+            logger.error(
                 "No DepthMapGeneration application named {} registered".format(
                     dm_method
                 )
@@ -71,7 +71,7 @@ class DepthMapGeneration(ApplicationTemplate, metaclass=ABCMeta):
                 )
             )
 
-        logging.info(
+        logger.info(
             "The DepthMapGeneration({}) application will be used".format(
                 dm_method
             )

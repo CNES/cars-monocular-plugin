@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@
 # limitations under the License.
 #
 """
-CARS edge detection pipeline module init file
+Init file of CARS Monocular
 """
 
-# Cars imports
-from cars_edge_detection_plugin.pipelines.edge_detection import (  # noqa: F401
-    edge_detection_pipeline,
-)
+import cars_monocular.applications  # noqa: F401
+import cars_monocular.pipelines  # noqa: F401
+from cars_monocular.download_models import ensure_default_model_available
+
+# Best-effort auto-download of the default model on import.
+ensure_default_model_available()
