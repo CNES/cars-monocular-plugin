@@ -15,11 +15,11 @@ ifndef VENV
 endif
 
 CHECK_CARS = $(shell ${VENV}/bin/python -m pip list|grep "cars ")
-CHECK_CARS_LIBGEO = $(shell ${CARS_VENV}/bin/python -m pip list|grep cars-edge-detection-plugin)
+CHECK_CARS_LIBGEO = $(shell ${CARS_VENV}/bin/python -m pip list|grep cars-monocular)
 
 
 # Source and tests directory
-DIR = "cars_edge_detection_plugin"
+DIR = "cars_monocular"
 VERSION := $(shell /bin/sh .version.sh)
 ifeq ($(LOCAL_WHL_DIR),)
 export LOCAL_WHL_DIR=/usr/local/share/codip
@@ -68,16 +68,16 @@ venv:
 
 .PHONY: install
 install: venv  ## install plugin
-	@[ "${CHECK_CARS}" ] || test -f ${VENV}/bin/cars_edge_detection_plugin || ${VENV}/bin/pip install -e .[cars,dev]
+	@[ "${CHECK_CARS}" ] || test -f ${VENV}/bin/cars_monocular || ${VENV}/bin/pip install -e .[cars,dev]
 
 
 .PHONY: install-dev
 install-dev: venv git  ## install the package in dev mode in virtualenv
-	@[ "${CHECK_CARS}" ] || test -f ${VENV}/bin/cars_edge_detection_plugin || ${VENV}/bin/pip install --no-binary rasterio,fiona -e .[dev,cars]
-	@[ -z "${CHECK_CARS}" ] || test -f ${VENV}/bin/cars_edge_detection_plugin || ${VENV}/bin/pip install --no-binary rasterio,fiona -e .[dev]
+	@[ "${CHECK_CARS}" ] || test -f ${VENV}/bin/cars_monocular || ${VENV}/bin/pip install --no-binary rasterio,fiona -e .[dev,cars]
+	@[ -z "${CHECK_CARS}" ] || test -f ${VENV}/bin/cars_monocular || ${VENV}/bin/pip install --no-binary rasterio,fiona -e .[dev]
 	@test -f .git/hooks/pre-commit || echo "Install pre-commit"
 	@test -f .git/hooks/pre-commit || ${VENV}/bin/pre-commit install -t pre-commit
-	@echo " cars_edge_detection_plugin venv usage : source ${VENV}/bin/activates"
+	@echo " cars_monocular venv usage : source ${VENV}/bin/activates"
 
 
 .PHONY: test
@@ -95,12 +95,12 @@ format: install format/isort format/black  ## run black and isort formatting (de
 .PHONY: format/isort
 format/isort: install  ## run isort formatting (depends install)
 	@echo "+ $@"
-	@${VENV}/bin/isort cars_edge_detection_plugin tests
+	@${VENV}/bin/isort cars_monocular tests
 
 .PHONY: format/black
 format/black: install  ## run black formatting (depends install)
 	@echo "+ $@"
-	@${VENV}/bin/black cars_edge_detection_plugin tests
+	@${VENV}/bin/black cars_monocular tests
 
 ### Check code quality and linting : isort, black, flake8, pylint
 
@@ -110,22 +110,22 @@ lint:  lint/isort lint/black lint/flake8 lint/pylint ## check code quality and l
 .PHONY: lint/isort
 lint/isort: ## check imports style with isort
 	@echo "+ $@"
-	@${VENV}/bin/isort --check cars_edge_detection_plugin  tests
+	@${VENV}/bin/isort --check cars_monocular  tests
 	
 .PHONY: lint/black
 lint/black: ## check global style with black
 	@echo "+ $@"
-	@${VENV}/bin/black --check cars_edge_detection_plugin  tests
+	@${VENV}/bin/black --check cars_monocular  tests
 
 .PHONY: lint/flake8
 lint/flake8: ## check linting with flake8
 	@echo "+ $@"
-	@${VENV}/bin/flake8 cars_edge_detection_plugin  tests
+	@${VENV}/bin/flake8 cars_monocular  tests
 
 .PHONY: lint/pylint
 lint/pylint: ## check linting with pylint
 	@echo "+ $@"
-	@set -o pipefail; ${VENV}/bin/pylint cars_edge_detection_plugin tests --rcfile=.pylintrc --output-format=parseable | tee pylint-report.txt # pipefail to propagate pylint exit code in bash
+	@set -o pipefail; ${VENV}/bin/pylint cars_monocular tests --rcfile=.pylintrc --output-format=parseable | tee pylint-report.txt # pipefail to propagate pylint exit code in bash
 
 .PHONY: clean
 clean: ## clean: remove venv, cars build, cache, ...

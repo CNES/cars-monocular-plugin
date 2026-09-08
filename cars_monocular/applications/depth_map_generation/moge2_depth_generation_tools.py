@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Edge detection Plugin
-# (see https://github.com/CNES/cars-edge-detection-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@
 this module contains the depth map generation application tools
 """
 
-import logging
-
 import numpy as np
+from cars.core.cars_logging import logger
 
 
 def tile_to_tokens(tile_size):
@@ -72,7 +71,7 @@ def compute_tile_size_and_overlap(
     elif "vits-normal" in moge_model:
         model = models["vits-normal"]
     elif "vitl-normal" not in moge_model:
-        logging.warning(
+        logger.warning(
             "The MoGe2 model provided is not recognized. "
             "Memory consumption estimation will be performed "
             "as if vitl-normal was selected."
@@ -84,13 +83,13 @@ def compute_tile_size_and_overlap(
     if optimal_ram <= mem_constraint or mem_constraint <= model["min_ram"]:
 
         if mem_constraint <= model["min_ram"]:
-            logging.warning(
+            logger.warning(
                 "The model selected requires more RAM per worker "
                 "than is set as the maximum amount "
                 f"(minimum required: {model['min_ram']}MiB, "
                 f"maximum per worker: {mem_constraint}MiB)."
             )
-            logging.warning(
+            logger.warning(
                 "CARS will try to run the model with the optimal tile size."
             )
         # remove overlap from both sides, so that a
@@ -103,7 +102,7 @@ def compute_tile_size_and_overlap(
     best_token_count = model["ram_to_tokens"](mem_constraint)
 
     if best_token_count < min_token_count:
-        logging.warning(
+        logger.warning(
             "The maximum RAM does not allow for a high enough tile size. "
             "The minimum tile size will be used."
         )

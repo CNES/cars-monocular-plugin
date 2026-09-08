@@ -166,12 +166,12 @@ def generate_input_json(
     config["output"] = {"directory": os.path.join(output_directory, "output")}
 
     config["advanced"] = {
-        "pipeline": "edge_detection",
+        "pipeline": "monocular",
     }
 
     # Create keys
-    if "edge_detection" not in config:
-        config["edge_detection"] = {"applications": {}, "advanced": {}}
+    if "monocular" not in config:
+        config["monocular"] = {"applications": {}, "advanced": {}}
 
     # transform paths
     new_config = config.copy()
