@@ -32,7 +32,7 @@ CARS Monocular pipeline class file
 from __future__ import print_function
 
 import os
-
+from json_checker import Or
 from cars.applications.application import Application
 from cars.core.cars_logging import logger
 
@@ -161,7 +161,7 @@ class Monocular(PipelineTemplate):
             self.depth_map_generation_app.get_conf()
         )
 
-        return conf
+        return used_conf
 
     def check_output(self, conf):
         """
@@ -178,12 +178,20 @@ class Monocular(PipelineTemplate):
         conf["save_intermediate_data"] = conf.get(
             "save_intermediate_data", False
         )
-        conf["right_image_monocular"] = conf.get("right_image_monocular", False)
+        conf["right_image_monocular"] = conf.get(
+            "right_image_monocular", False
+        )
+
+        conf["activated"] = conf.get("activated", "auto")
 
         schema = {
             "save_intermediate_data": bool,
             "right_image_monocular": bool,
+            "activated": Or(bool, str)
         }
+
+        if conf["activated"] not in (True, False, "auto"):
+            raise RuntimeError("The activated parameter should be True, False or auto")
 
         checker = Checker(schema)
         checker.validate(conf)
