@@ -16,7 +16,7 @@ More information can be found over at [CARS's GitHub page](https://github.com/CN
 First clone this repository, using :
 
 ```bash
-$ git clone --recurse-submodules git@gitlab.cnes.fr:dali/cars-park/cars-plugins/cars-monocular-plugin.git
+$ git clone --recurse-submodules git@github.com:CNES/cars-monocular-plugin.git
 $ cd cars-monocular-plugin   
 ``` 
 
