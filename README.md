@@ -1,3 +1,15 @@
+<div align="center">
+  <a target="_blank" href="https://github.com/CNES/cars">
+    <picture>
+      <img
+        src="https://raw.githubusercontent.com/CNES/cars/master/docs/source/images/cars_picto.svg"
+        alt="CARS"
+        width="50%"
+      />
+    </picture>
+  </a>
+</div>
+
 # Monocular abilities for CARS
 
 This plugin enables the use of the MoGe2 model in CARS, for higher accuracy building reconstruction.
