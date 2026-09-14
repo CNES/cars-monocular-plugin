@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Monocular
-# (see https://github.com/CNES/cars-monocular).
+# This file is part of CARS Monocular Plugin
+# (see https://github.com/CNES/cars-monocular-plugin).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@
 # limitations under the License.
 #
 """
-CARS monocular pipeline module init file
+CARS depth_map_generation module init file
 """
 
-# Cars imports
-from cars_monocular.pipelines.monocular import monocular_pipeline  # noqa: F401
+from . import (  # noqa: F401
+    abstract_depth_map_generation_app,
+    moge2_depth_generation,
+)

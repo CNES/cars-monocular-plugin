@@ -1,4 +1,4 @@
-# **CARS Monocular** **Contributing guide**.
+# **CARS Monocular Plugin** **Contributing guide**.
 
 Any contribution to this repository should follow the guide for contributions of [CARS](https://github.com/CNES/cars).
 

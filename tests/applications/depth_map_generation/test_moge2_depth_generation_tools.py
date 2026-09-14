@@ -7,7 +7,7 @@ import logging
 import pytest
 
 # pylint: disable=line-too-long
-from cars_monocular.applications.depth_map_generation.moge2_depth_generation_tools import (  # noqa: E501,B950
+from cars_monocular_plugin.applications.depth_map_generation.moge2_depth_generation_tools import (  # noqa: E501,B950
     compute_tile_size_and_overlap,
 )
 
