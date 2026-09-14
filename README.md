@@ -16,8 +16,8 @@ More information can be found over at [CARS's GitHub page](https://github.com/CN
 First clone this repository, using :
 
 ```bash
-$ git clone --recurse-submodules git@gitlab.cnes.fr:dali/cars-park/cars-plugins/cars-monocular.git
-$ cd cars-monocular   
+$ git clone --recurse-submodules git@gitlab.cnes.fr:dali/cars-park/cars-plugins/cars-monocular-plugin.git
+$ cd cars-monocular-plugin   
 ``` 
 
 > **Note:** `--recurse-submodules` is required. This project vendors [MoGe](https://github.com/microsoft/MoGe) as a submodule, and MoGe itself vendors `utils3d` and `pipeline` as nested submodules. A plain `git clone` will leave those directories empty, causing build failures.
@@ -58,12 +58,12 @@ then move it to its proper place for the plugin to recognize it :
 $ wget https://huggingface.co/Ruicheng/moge-2-vitl-normal/resolve/main/model.pt
 
 # move the model to the right place
-# it should be under cars_monocular/applications/depth_map_generation/models with the proper name for each model :
+# it should be under cars_monocular_plugin/applications/depth_map_generation/models with the proper name for each model :
 #  - moge-2-vitl-normal.pt
 #  - moge-2-vitb-normal.pt
 #  - moge-2-vits-normal.pt
-$ mkdir [your/plugin/installation/path/]cars_monocular/applications/depth_map_generation/models
-$ mv ./model.pt [your/plugin/installation/path/]cars_monocular/applications/depth_map_generation/models/moge-2-vitl-normal.pt
+$ mkdir [your/plugin/installation/path/]cars_monocular_plugin/applications/depth_map_generation/models
+$ mv ./model.pt [your/plugin/installation/path/]cars_monocular_plugin/applications/depth_map_generation/models/moge-2-vitl-normal.pt
 ```
 
 ## Using the new pipeline

@@ -7,7 +7,7 @@
 #
 #     https://gitlab.cnes.fr/co3d-image/codip
 """
-Setup.py for CARS Monocular
+Setup.py for CARS Monocular Plugin
 """
 
 from setuptools import setup

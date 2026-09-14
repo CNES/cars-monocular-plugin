@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 # pylint: disable=line-too-long
-from cars_monocular.applications.depth_map_generation.moge2_wrapper import (  # noqa: E501,B950
+from cars_monocular_plugin.applications.depth_map_generation.moge2_wrapper import (  # noqa: E501,B950
     add_insufficient_overlap,
 )
 

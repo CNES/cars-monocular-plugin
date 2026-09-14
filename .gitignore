@@ -95,6 +95,6 @@ instance/
 *.swp
 
 # model folder & files
-cars_monocular/applications/depth_map_generation/models/*
+cars_monocular_plugin/applications/depth_map_generation/models/*
 
 tests/data/intermediate_data/*

@@ -3,7 +3,7 @@
 ## 0.2.0 Package and plugin name change (September 2026)
 
 - Update the plugin to support the new logging API exposed by CARS
-- The package has been renamed to cars-monocular for better consistency with other official plugins 
+- The package has been renamed to cars-monocular-plugin for better consistency with other official plugins 
 
 ## 0.1.1 Support for progress logs (June 2026)
 

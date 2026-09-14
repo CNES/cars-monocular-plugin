@@ -13,11 +13,11 @@ requires = [
 
 [tool.setuptools]
 packages = [
-    "cars_monocular",
-    "cars_monocular.applications",
-    "cars_monocular.applications.depth_map_generation",
-    "cars_monocular.pipelines",
-    "cars_monocular.pipelines.monocular",
+    "cars_monocular_plugin",
+    "cars_monocular_plugin.applications",
+    "cars_monocular_plugin.applications.depth_map_generation",
+    "cars_monocular_plugin.pipelines",
+    "cars_monocular_plugin.pipelines.monocular",
     "moge",
     "moge.model",
     "moge.test",
@@ -46,7 +46,7 @@ packages = [
 
 # package setup main metadata
 [project]
-name = "cars-monocular"
+name = "cars-monocular-plugin"
 dynamic = ["version"]
 authors = [{ name = "CNES", email = "cars@cnes.fr" }]
 description = "CARS plugin to use the MoGe2 model for monocular reconstruction"
@@ -137,11 +137,11 @@ universal = false
 
 # entry points
 [project.entry-points."cars.plugins"]
-plugin = "cars_monocular"
+plugin = "cars_monocular_plugin"
 
 # entry points cli scripts
 [project.scripts]
-cars-download-moge2 = "cars_monocular.download_models:main"
+cars-download-moge2 = "cars_monocular_plugin.download_models:main"
 
 [tool.cibuildwheel]
 skip = ["pp*", "*-win32"]
