@@ -16,6 +16,7 @@ packages = [
     "cars_monocular_plugin",
     "cars_monocular_plugin.applications",
     "cars_monocular_plugin.applications.depth_map_generation",
+    "cars_monocular_plugin.applications.oversampling",
     "cars_monocular_plugin.pipelines",
     "cars_monocular_plugin.pipelines.monocular",
     "moge",

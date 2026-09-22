@@ -11,7 +11,7 @@ import tempfile
 import pytest
 from cars.core.utils import safe_makedirs
 
-from cars_monocular.pipelines.monocular import monocular_pipeline
+from cars_monocular_plugin.pipelines.monocular import monocular_pipeline
 
 # CARS Tests imports
 from .helpers import absolute_data_path, assert_same_images
