@@ -31,8 +31,11 @@ CARS Monocular pipeline class file
 # Standard imports
 from __future__ import print_function
 
+import copy
+import json
 import os
-from json_checker import Or
+
+import yaml
 from cars.applications.application import Application
 from cars.core.cars_logging import logger
 
@@ -52,7 +55,8 @@ from cars.pipelines.pipeline_constants import (
     OUTPUT,
 )
 from cars.pipelines.pipeline_template import PipelineTemplate
-from json_checker import Checker, OptionalKey
+from cars.pipelines.subsampling.subsampling import SubsamplingPipeline
+from json_checker import And, Checker, OptionalKey, Or
 
 package_path = os.path.dirname(__file__)
 
@@ -133,7 +137,7 @@ class Monocular(PipelineTemplate):
 
         used_conf = {}
 
-        needed_applications = ["depth_map_generation"]
+        needed_applications = ["depth_map_generation", "oversampling"]
 
         # Check if all specified applications are used
         # Application in terrain_application are note used in
@@ -148,8 +152,19 @@ class Monocular(PipelineTemplate):
                 raise NameError(msg)
 
         depth_map_generation_conf = conf.get("depth_map_generation", {})
-        if "save_intermediate_data" not in depth_map_generation_conf:
+        oversampling_conf = conf.get("oversampling", {})
+        if (
+            "save_intermediate_data" not in depth_map_generation_conf
+            or depth_map_generation_conf["save_intermediate_data"] is False
+        ):
             depth_map_generation_conf["save_intermediate_data"] = (
+                self.save_intermediate_data
+            )
+        if (
+            "save_intermediate_data" not in oversampling_conf
+            or oversampling_conf["save_intermediate_data"] is False
+        ):
+            oversampling_conf["save_intermediate_data"] = (
                 self.save_intermediate_data
             )
 
@@ -157,9 +172,14 @@ class Monocular(PipelineTemplate):
             "depth_map_generation",
             cfg=depth_map_generation_conf,
         )
+        self.oversampling_app = Application(
+            "oversampling", cfg=oversampling_conf
+        )
+
         used_conf["depth_map_generation"] = (
             self.depth_map_generation_app.get_conf()
         )
+        used_conf["oversampling"] = self.oversampling_app.get_conf()
 
         return used_conf
 
@@ -178,26 +198,30 @@ class Monocular(PipelineTemplate):
         conf["save_intermediate_data"] = conf.get(
             "save_intermediate_data", False
         )
-        conf["right_image_monocular"] = conf.get(
-            "right_image_monocular", False
-        )
+        conf["right_image_monocular"] = conf.get("right_image_monocular", False)
 
         conf["activated"] = conf.get("activated", "auto")
+        conf["resolution"] = conf.get("resolution", 1)
 
         schema = {
             "save_intermediate_data": bool,
             "right_image_monocular": bool,
-            "activated": Or(bool, str)
+            "resolution": And(int, lambda x: x > 0),
+            "activated": Or(bool, str),
         }
 
         if conf["activated"] not in (True, False, "auto"):
-            raise RuntimeError("The activated parameter should be True, False or auto")
+            raise RuntimeError(
+                "The activated parameter should be True, False or auto"
+            )
 
         checker = Checker(schema)
         checker.validate(conf)
 
         self.save_intermediate_data = conf["save_intermediate_data"]
         self.right_image_monocular = conf["right_image_monocular"]
+        self.resolution = conf["resolution"]
+        self.use_subsampling = self.resolution > 1
 
         return conf
 
@@ -217,12 +241,41 @@ class Monocular(PipelineTemplate):
             )
         else:
             self.pipeline_progress_id = parent_pipeline_id
-        self.task_progress_id = progress_tree.register_task(
+
+        self.subsampling_pipeline_progress_id = None
+        if self.use_subsampling:
+            self.subsampling_pipeline_progress_id = (
+                progress_tree.begin_pipeline(
+                    "Subsampling",
+                    parent_id=self.pipeline_progress_id,
+                )
+            )
+
+        self.depth_map_task_progress_id = progress_tree.register_task(
             self.pipeline_progress_id,
-            "monocular",
-            weight=1.0,
+            "depth_map_generation",
+            weight=20.0,
         )
-        return self.task_progress_id
+
+        return self.depth_map_task_progress_id
+
+    @staticmethod
+    def load_subsampling_inputs(out_dir, resolution):
+        """
+        Load subsampling-generated inputs for a given resolution.
+        """
+
+        yaml_file = os.path.join(
+            out_dir,
+            "subsampling",
+            "res_" + str(resolution),
+            "input.yaml",
+        )
+
+        with open(yaml_file, encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+
+        return json.loads(json.dumps(data, indent=4))
 
     @cars_profile(name="Run_monocular", interval=0.5)
     def run(
@@ -254,7 +307,33 @@ class Monocular(PipelineTemplate):
             ),
         ) as self.cars_orchestrator:
 
+            inputs_for_depth_map = self.used_conf[INPUT]
+
+            # ---- Subsampling ----
+            if self.use_subsampling:
+                logger.info(
+                    "Starting image subsampling before depth map generation"
+                )
+                subsampling_conf = {
+                    INPUT: copy.deepcopy(self.used_conf[INPUT]),
+                    OUTPUT: {out_cst.OUT_DIRECTORY: self.dump_dir},
+                    "subsampling": {
+                        ADVANCED: {"resolutions": [self.resolution]}
+                    },
+                }
+                subsampling_pipeline = SubsamplingPipeline(subsampling_conf)
+                subsampling_pipeline.run(
+                    parent_pipeline_id=self.subsampling_pipeline_progress_id
+                )
+
+                inputs_for_depth_map = self.load_subsampling_inputs(
+                    self.dump_dir,
+                    self.resolution,
+                )
+
+            # --- Depth map generation ---
             for sensor_key in sensors_to_compute:
+
                 depth_map_generation_save_dir = os.path.join(
                     self.out_dir, "monocular", sensor_key
                 )
@@ -267,11 +346,33 @@ class Monocular(PipelineTemplate):
                 logger.info(
                     f"Starting Depth map generation for sensor {sensor_key}"
                 )
-                self.cars_orchestrator.set_target_task(self.task_progress_id)
-                self.depth_map_generation_app.run(
-                    image=self.used_conf[INPUT]["sensors"][sensor_key],
+                self.cars_orchestrator.set_target_task(
+                    self.depth_map_task_progress_id
+                )
+                depth_map_output = self.depth_map_generation_app.run(
+                    image=inputs_for_depth_map["sensors"][sensor_key],
                     image_key=sensor_key,
                     dump_folder=depth_map_generation_dump_dir,
                     save_folder=depth_map_generation_save_dir,
                     orchestrator=self.cars_orchestrator,
                 )
+
+                if self.use_subsampling:
+
+                    oversampling_save_dir = os.path.join(
+                        self.out_dir, "monocular", sensor_key
+                    )
+                    oversampling_dump_dir = os.path.join(
+                        self.dump_dir, "oversampling", sensor_key
+                    )
+                    safe_makedirs(oversampling_save_dir)
+                    safe_makedirs(oversampling_dump_dir)
+
+                    self.oversampling_app.run(
+                        image=self.used_conf[INPUT]["sensors"][sensor_key],
+                        image_key=sensor_key,
+                        dump_folder=oversampling_dump_dir,
+                        save_folder=oversampling_save_dir,
+                        depth_map_output=depth_map_output,
+                        orchestrator=self.cars_orchestrator,
+                    )

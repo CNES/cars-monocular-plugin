@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2026 Centre National d'Etudes Spatiales (CNES).
 #
-# This file is part of CARS Monocular Plugin
-# (see https://github.com/CNES/cars-monocular-plugin).
+# This file is part of CARS Monocular
+# (see https://github.com/CNES/cars-monocular).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 """
-CARS Monocular applications init file
+CARS oversampling module init file.
 """
 
-from . import depth_map_generation, oversampling  # noqa: F401
+from . import abstract_oversampling_app, simple_oversampling  # noqa: F401

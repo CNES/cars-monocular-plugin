@@ -23,4 +23,6 @@ CARS monocular pipeline module init file
 """
 
 # Cars imports
-from cars_monocular_plugin.pipelines.monocular import monocular_pipeline  # noqa: F401
+from cars_monocular_plugin.pipelines.monocular import (  # noqa: F401
+    monocular_pipeline,
+)

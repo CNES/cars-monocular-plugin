@@ -207,9 +207,7 @@ class MoGe2DepthGeneration(DepthMapGeneration, short_name="moge2"):
             min_tile_size=420,
         )
 
-        logger.warning(
-            f"Using window size {window_size} with overlap {margin}"
-        )
+        logger.warning(f"Using window size {window_size} with overlap {margin}")
 
         moge_output.create_grid(
             sensor_width,
