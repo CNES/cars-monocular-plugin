@@ -28,6 +28,8 @@
 CARS Monocular pipeline class file
 """
 
+# pylint: disable=too-many-instance-attributes
+
 # Standard imports
 from __future__ import print_function
 

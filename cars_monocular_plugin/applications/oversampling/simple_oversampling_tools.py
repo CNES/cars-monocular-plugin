@@ -22,6 +22,8 @@
 Tools for tile-based oversampling.
 """
 
+# pylint: disable=no-member
+
 import cv2
 import numpy as np
 import xarray as xr
